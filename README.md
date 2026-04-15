@@ -1,11 +1,35 @@
 # Interview Auctions
 
-A farm equipment auction platform. You'll fix a bug to get oriented, then build features on top of a working app.
+A farm equipment auction application built with **React (Vite)** and **TypeScript**. 
 
-## Prerequisites
+## Engineering Highlights & Trade-offs
 
-- **Node.js** (required regardless of backend choice) — [nodejs.org/en/download](https://nodejs.org/en/download)
-- **Python** (only required if using the Python backend) — [python.org/downloads](https://www.python.org/downloads)
+### 1. Robust API Contracts (Zod)
+I implemented `zod` for strict runtime validation on the Express backend. Using `.safeParse()` ensures the server never crashes from malformed inputs and provides explicit, actionable `400 Bad Request` messages back to the client.
+
+### 2. Performance & Frontend State
+* **Debounced Search:** Implemented a custom `useDebounce` hook on the search input to prevent unnecessary API spam and database race conditions during rapid typing.
+* **Optimistic UI Updates:** The React frontend updates local state immediately upon a successful `201` response, avoiding heavy full-page reloads.
+* **Timezone Safety:** The frontend converts local HTML `datetime-local` inputs into strict UTC ISO strings before transmission, preventing cross-timezone corruption.
+
+### 3. Edge Case Handling & UX Polish
+* **Dynamic Fallbacks:** If a user omits an image during listing creation, a `placehold.co` image with the listing's URL-encoded title is used.
+* **Efficient Sorting:** Satisfied the reverse-chronological bid history requirement at the insertion level (O(1) `unshift`) instead of sorting calculations (O(nlogn)).
+* **Validation:** Used React-driven form validation with `noValidate` attributes to ensure clean, consistent error messaging rather than relying on inconsistent browser-native tooltips.
+
+### 4. Architectural Trade-off: Persistence
+To maximize time spent on product features and API boundaries, I deliberately maintained the in-memory array data store. In a production environment, this would be migrated to a relational database (e.g., PostgreSQL, MySQL) with an ORM, and I would introduce a Redis caching layer or Optimistic Concurrency Control (versioning) to handle simultaneous bid race conditions safely.
+
+---
+
+## Completed Tasks
+
+1. **Bug Fix (Bidding):** Implemented boundary checks and type validation to prevent invalid bids.
+2. **Search & Filter:** Built debounced, case-insensitive server-side filtering.
+3. **Bid History:** Tracked chronological bid records and exposed them via RESTful endpoints.
+4. **Create Listing:** Built a robust form with comprehensive validation and defaults (e.g., `currentBid` initializing to `startingPrice`).
+
+---
 
 ## Setup
 
@@ -18,9 +42,7 @@ npm run dev
 
 Runs at `http://localhost:5173`.
 
-### Backend — pick one
-
-Choose either TypeScript or Python. Both backends are equivalent — pick whichever you're most comfortable with and stick with it.
+### Backend — TypeScript
 
 **TypeScript (Express)**
 ```bash
@@ -28,45 +50,5 @@ cd server/typescript
 npm install
 npm run dev
 ```
+
 Runs at `http://localhost:3001`.
-
-**Python (FastAPI)**
-```bash
-cd server/python
-pip install -r requirements.txt
-fastapi dev main.py --port 3001
-```
-Runs at `http://localhost:3001`.
-
-> The frontend proxies `/api` to `localhost:3001` regardless of which backend you run.
-> To use port 8000 instead, update the proxy target in `vite.config.ts`.
-
----
-
-## What to expect
-
-We expect this to take 1–2 hours. Start with task 0, then work on the tasks you've been assigned.
-
-**You can use any resource you want** — the internet, AI, documentation, anything. There are no restrictions. What matters is that you can explain what you built and why you made the choices you did. You'll walk through your code with us afterward, so make sure you understand it.
-
-**Depth over breadth.** A well-implemented task with clear reasoning is better than several half-finished ones. Don't rush to complete more tasks at the expense of the ones you've started.
-
-**Tests are not required.** Given the time constraint, focus on working, well-reasoned code. If writing tests helps you, go for it, but don't feel obligated.
-
-**There are no trick questions in the tasks.** The requirements say what they mean. When something is left unspecified, that's intentional — use your judgment and be ready to explain the call you made.
-
----
-
-## Committing
-
-Commit after each task. It doesn't need to be clean — just a checkpoint so we can review your work task by task. We'll be looking at the history during the code review.
-
-## Submission
-
-You'll receive this project as a zip file. To submit:
-
-1. Unzip the folder and initialize it as a git repository if it isn't already (`git init`)
-2. Do your work, committing after each task as described above
-3. Create a **public** repository on GitHub (or another public git host)
-4. Push your code to it
-5. Send us the link to your repository
