@@ -62,8 +62,24 @@ app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 // GET /api/listings
-app.get("/api/listings", (_req: Request, res: Response) => {
-	res.json(listings);
+app.get("/api/listings", (req: Request, res: Response) => {
+	const { q, category } = req.query;
+	let result = listings;
+
+	if (typeof q === "string" && q.trim() !== "") {
+		const lowerQ = q.toLowerCase();
+		result = result.filter(
+			(l) =>
+				l.title.toLowerCase().includes(lowerQ) ||
+				l.description.toLowerCase().includes(lowerQ),
+		);
+	}
+
+	if (typeof category === "string" && category !== "all") {
+		result = result.filter((l) => l.category === category);
+	}
+
+	res.json(result);
 });
 
 // POST /api/listings
