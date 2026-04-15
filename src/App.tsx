@@ -95,7 +95,10 @@ export default function App() {
 										key={listing.id}
 										listing={listing}
 										isSelected={listing.id === selectedId}
-										onClick={() => setSelectedId(listing.id)}
+										onClick={() => {
+											setShowCreateForm(false);
+											setSelectedId(listing.id);
+										}}
 									/>
 								))
 							)}
