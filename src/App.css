@@ -398,18 +398,37 @@ body {
 	letter-spacing: 0.04em;
 }
 
-.bid-form__field input {
+.bid-form__field input,
+.bid-form__field textarea,
+.bid-form__field select {
 	padding: 8px 12px;
 	border: 1px solid #ccc;
 	border-radius: 6px;
 	font-size: 0.95rem;
 	outline: none;
 	transition: border-color 0.15s;
+	font-family: inherit;
+	box-sizing: border-box;
+	background: #fff;
+	color: #555;
 }
 
-.bid-form__field input:focus {
+.bid-form__field textarea {
+	resize: vertical;
+	min-height: 38px;
+}
+
+.bid-form__field input:focus,
+.bid-form__field textarea:focus,
+.bid-form__field select:focus {
 	border-color: #2596be;
 	box-shadow: 0 0 0 2px #2596be30;
+}
+
+.bid-form__field input[type="datetime-local"] {
+	color: #555;
+	font-family: inherit;
+	font-size: 0.95rem;
 }
 
 .bid-form__submit {

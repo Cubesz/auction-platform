@@ -19,7 +19,9 @@ export async function getListing(id: string): Promise<Listing> {
 	return res.json();
 }
 
-export async function createListing(data: { title: string }): Promise<Listing> {
+import type { CreateListingInput } from "../types";
+
+export async function createListing(data: CreateListingInput): Promise<Listing> {
 	const res = await fetch("/api/listings", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },

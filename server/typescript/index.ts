@@ -40,6 +40,11 @@ type BidRequest = z.infer<typeof BidSchema>;
 
 const CreateListingSchema = z.object({
 	title: z.string().min(1, "Title is required"),
+	description: z.string().min(1, "Description is required"),
+	category: z.enum(["tractor", "combine", "implement", "attachment"]),
+	startingPrice: z.number().nonnegative("Starting price must be non-negative"),
+	imageUrl: z.string().url("Image URL must be valid").optional().or(z.literal("")),
+	endsAt: z.string().min(1, "End date/time is required"),
 });
 type CreateListingRequest = z.infer<typeof CreateListingSchema>;
 
@@ -84,23 +89,26 @@ app.get("/api/listings", (req: Request, res: Response) => {
 
 // POST /api/listings
 app.post("/api/listings", (req: Request, res: Response) => {
+	// Parse and validate input
 	const parseResult = CreateListingSchema.safeParse(req.body);
 	if (!parseResult.success) {
 		return res.status(400).json({ error: parseResult.error.issues[0].message });
 	}
-	const { title } = parseResult.data;
+	const { title, description, category, startingPrice, imageUrl, endsAt } = parseResult.data;
 
+	const safeTitle = title.trim();
+	const defaultImageUrl = `https://placehold.co/400x300?text=${encodeURIComponent(safeTitle)}`;
 	const listing: Listing = {
 		id: randomUUID(),
-		title: title.trim(),
-		description: "",
-		category: "implement",
-		startingPrice: 0,
-		currentBid: 0,
+		title: safeTitle,
+		description: description.trim(),
+		category,
+		startingPrice,
+		currentBid: startingPrice,
 		currentBidder: null,
 		status: "active",
-		endsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-		imageUrl: "",
+		endsAt: endsAt || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+		imageUrl: imageUrl && imageUrl.trim() !== "" ? imageUrl : defaultImageUrl,
 		bids: [],
 	};
 

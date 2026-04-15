@@ -11,3 +11,12 @@ export interface Listing {
 	imageUrl: string;
 	bids?: { amount: number; bidder: string; timestamp: string }[];
 }
+
+export interface CreateListingInput {
+	title: string;
+	description: string;
+	category: "tractor" | "combine" | "implement" | "attachment";
+	startingPrice: number;
+	imageUrl: string;
+	endsAt: string;
+}
