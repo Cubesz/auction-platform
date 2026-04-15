@@ -9,4 +9,5 @@ export interface Listing {
 	status: "active" | "closed" | "pending";
 	endsAt: string;
 	imageUrl: string;
+	bids?: { amount: number; bidder: string; timestamp: string }[];
 }

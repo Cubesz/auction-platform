@@ -63,6 +63,23 @@ export default function ListingDetail({ listing, onBidSuccess }: Props) {
 			{listing.status === "active" && (
 				<BidForm listing={listing} onBidSuccess={onBidSuccess} />
 			)}
-		</div>
+
+			<div className="listing-detail__history">
+				<h3>Bid History</h3>
+				{(!listing.bids || listing.bids.length === 0) ? (
+					<p className="listing-detail__description">No bids yet. Be the first to bid!</p>
+				) : (
+					<ul className="bid-history-list">
+						{listing.bids.map((b, i) => (
+							<li key={i}>
+								<strong>${b.amount.toLocaleString()}</strong>
+								<span>by {b.bidder}</span>
+								<small>{formatDate(b.timestamp)}</small>
+							</li>
+						))}
+					</ul>
+				)}
+			</div>
+		</div >
 	);
 }

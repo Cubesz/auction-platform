@@ -9,13 +9,16 @@ interface Props {
 
 export default function BidForm({ listing, onBidSuccess }: Props) {
 	const [error, setError] = useState<string | null>(null);
+	const [success, setSuccess] = useState<string | null>(null);
 	const [submitting, setSubmitting] = useState(false);
 
 	const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setError(null);
+		setSuccess(null);
 
-		const data = new FormData(e.currentTarget);
+		const form = e.currentTarget;
+		const data = new FormData(form);
 		const bidder = (data.get("bidder") as string).trim();
 		const numAmount = parseFloat(data.get("amount") as string);
 
@@ -32,7 +35,8 @@ export default function BidForm({ listing, onBidSuccess }: Props) {
 		try {
 			const updated = await placeBid(listing.id, bidder, numAmount);
 			onBidSuccess(updated);
-			e.currentTarget.reset();
+			setSuccess("Success! Your bid has been placed.");
+			form.reset();
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "Failed to place bid");
 		} finally {
@@ -41,9 +45,10 @@ export default function BidForm({ listing, onBidSuccess }: Props) {
 	};
 
 	return (
-		<form className="bid-form" onSubmit={handleSubmit}>
+		<form className="bid-form" onSubmit={handleSubmit} noValidate>
 			<h4 className="bid-form__title">Place a Bid</h4>
 			{error && <div className="bid-form__error">{error}</div>}
+			{success && <div className="bid-form__success">{success}</div>}
 			<div className="bid-form__field">
 				<label htmlFor="bidder">Your Name</label>
 				<input
